@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wingo Pro - Play & Earn</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        :root { --gold: #ffcc00; --green: #2ecc71; --red: #e74c3c; --bg: #121212; --card: #1e1e1e; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 0; text-align: center; }
+        .app-header { background: #000; padding: 15px; border-bottom: 2px solid var(--gold); display: flex; justify-content: space-between; align-items: center; }
+        .logo-box { background: var(--gold); color: #000; width: 35px; height: 35px; border-radius: 8px; font-weight: 900; font-size: 22px; display: flex; justify-content: center; align-items: center; }
+        .wallet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin: 10px; }
+        .m-row { display: flex; gap: 5px; margin: 10px 0; }
+        .m-btn { flex: 1; padding: 10px; background: #333; color: #fff; border: 1px solid #444; border-radius: 6px; cursor: pointer; font-size: 12px; }
+        .m-btn.active { background: var(--gold); color: #000; font-weight: bold; }
+        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; color: white; }
+        .green { background: var(--green); } .red { background: var(--red); } .violet { background: #9b59b6; }
+        .locked-overlay { filter: grayscale(1); opacity: 0.5; pointer-events: none; }
+        input { width: 92%; padding: 10px; margin: 5px 0; background: #222; color: #fff; border: 1px solid #444; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-header">
+        <div style="display: flex; align-items: center;">
+            <div class="logo-box">W</div>
+            <span style="margin-left:10px; font-weight:800;">WINGO <span style="background:var(--gold); color:#000; padding:2px 5px; border-radius:4px; font-size:10px;">PRO</span></span>
+        </div>
+        <div onclick="alert('Support: @YourTelegramID')">🎧</div>
+    </div>
+
+    <div class="wallet-grid">
+        <div class="card" style="border-bottom: 3px solid var(--green);">
+            <small>Game Wallet</small>
+            <h2 id="game-bal">₹20</h2>
+            <p id="status-text" style="font-size:10px; color:var(--red);">ID INACTIVE (Min ₹100 Deposit)</p>
+        </div>
+        <div class="card" style="border-bottom: 3px solid var(--gold);">
+            <small>Promo Wallet</small>
+            <h2 id="promo-bal">₹0</h2>
+            <button onclick="requestWithdrawal()" class="m-btn" style="font-size:10px; padding:4px;">Withdraw</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h4>Automatic Deposit & Activation</h4>
+        <input type="number" id="dep-amt" placeholder="Amount (Min 100)">
+        <input type="number" id="utr-num" placeholder="12-Digit UTR Number">
+        <button onclick="submitUTR()" class="btn green">Submit Payment</button>
+    </div>
+
+    <div id="game-area" class="locked-overlay">
+        <div class="card">
+            <h3 id="timer">00:30</h3>
+            <div class="m-row">
+                <button class="btn green" onclick="placeBet('Green')">Green</button>
+                <button class="btn violet" onclick="placeBet('Violet')">Violet</button>
+                <button class="btn red" onclick="placeBet('Red')">Red</button>
+            </div>
+            <div class="m-row">
+                <button class="m-btn amt active" onclick="setBase(10, this)">10</button>
+                <button class="m-btn amt" onclick="setBase(100, this)">100</button>
+                <button class="m-btn amt" onclick="setBase(1000, this)">1k</button>
+            </div>
+            <div class="m-row">
+                <button class="m-btn xbtn active" onclick="setMult(1, this)">x1</button>
+                <button class="m-btn xbtn" onclick="setMult(10, this)">x10</button>
+                <button class="m-btn xbtn" onclick="setMult(100, this)">x100</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDQflX2XkmKtdMOiY1Gvi6iEjXBrftGEGM",
+  authDomain: "wingopro-370d4.firebaseapp.com",
+  databaseURL: "https://wingopro-370d4-default-rtdb.firebaseio.com",
+  projectId: "wingopro-370d4",
+ };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let baseAmt = 10, multiplier = 1, userUID = "USER_ID_LOGIC"; 
+
+        function setBase(v, e) { baseAmt = v; document.querySelectorAll('.amt').forEach(b=>b.classList.remove('active')); e.classList.add('active'); }
+        function setMult(v, e) { multiplier = v; document.querySelectorAll('.xbtn').forEach(b=>b.classList.remove('active')); e.classList.add('active'); }
+
+        function submitUTR() {
+            const utr = document.getElementById('utr-num').value;
+            const amt = document.getElementById('dep-amt').value;
+            if(utr.length !== 12) return alert("Invalid UTR!");
+            db.ref('deposits').push({ uid: userUID, utr: utr, amount: amt, status: "PENDING" });
+            alert("Submitted for Verification!");
+        }
+
+        function placeBet(choice) {
+            let total = baseAmt * multiplier;
+            // Bet placement logic...
+        }
+    </script>
+</body>
+</html>
