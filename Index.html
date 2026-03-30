@@ -1,4 +1,4 @@
-      <!DOCTYPE html>
+we              <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -19,10 +19,10 @@
         .footer-item { text-align: center; color: #888; font-size: 12px; cursor: pointer; }
         .footer-active { color: #007bff; }
         .btn-join { color: white; padding: 10px; border-radius: 5px; font-weight: bold; width: 32%; font-size: 14px; }
-        table { width: 100%; text-align: center; font-size: 13px; }
-        th { background: #f8f9fa; color: #888; padding: 10px; }
-        td { padding: 12px; border-bottom: 1px solid #eee; }
         .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }
+        table { width: 100%; text-align: center; font-size: 13px; margin-top: 10px; }
+        th { background: #f8f9fa; color: #888; padding: 10px; font-weight: normal; }
+        td { padding: 12px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -55,7 +55,7 @@
         </div>
         <div class="mt-2 px-2 bg-white">
             <div class="p-4 border-b flex items-center gap-3"><i class="fa-solid fa-wallet text-purple-600"></i> Wallet</div>
-            <div class="p-4 border-b flex items-center gap-3"><i class="fa-solid fa-credit-card text-blue-400"></i> Bank Card</div>
+            <div class="p-4 border-b flex items-center gap-3"><i class="fa-solid fa-shield-halved text-blue-600"></i> Security</div>
             <div class="p-6"><button onclick="logout()" class="w-full bg-red-700 text-white py-3 rounded-xl font-bold">Logout</button></div>
         </div>
     </div>
@@ -69,10 +69,10 @@
             </div>
         </div>
         <div class="tab-bar">
-            <div class="tab-item tab-active">Parity</div>
-            <div class="tab-item">Sapre</div>
-            <div class="tab-item">Bcone</div>
-            <div class="tab-item">Emerd</div>
+            <div class="tab-item tab-active" onclick="switchGameTab('Parity')">Parity</div>
+            <div class="tab-item" onclick="switchGameTab('Sapre')">Sapre</div>
+            <div class="tab-item" onclick="switchGameTab('Bcone')">Bcone</div>
+            <div class="tab-item" onclick="switchGameTab('Emerd')">Emerd</div>
         </div>
         <div class="bg-white p-4 flex justify-between items-center border-b">
             <div>
@@ -90,6 +90,7 @@
             <button onclick="placeBet('Red')" class="btn-join bg-red-500">Join Red</button>
         </div>
         <div class="bg-white p-2">
+            <div class="text-center font-bold text-gray-600 py-2"><span id="active-tab-name">Parity</span> Record</div>
             <table id="history-table">
                 <thead><tr><th>Period</th><th>Price</th><th>Number</th><th>Result</th></tr></thead>
                 <tbody id="history-body"></tbody>
@@ -99,7 +100,7 @@
 
     <div class="footer-nav">
         <div class="footer-item" onclick="showPage('home')"><i class="fa-solid fa-house"></i><p>Home</p></div>
-        <div class="footer-item" onclick="showPage('win')"><i class="fa-solid fa-chart-line text-xl"></i><p>Win</p></div>
+        <div class="footer-item" id="footer-win" onclick="showPage('win')"><i class="fa-solid fa-chart-line text-xl"></i><p>Win</p></div>
         <div class="footer-item footer-active" id="footer-my" onclick="showPage('my')"><i class="fa-solid fa-user text-xl"></i><p>My</p></div>
     </div>
 
@@ -122,18 +123,48 @@
         const db = getFirestore(app);
         let currentUserId = null;
 
+        // NAVIGATION LOGIC
         window.showPage = (id) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-            if(id === 'win') document.getElementById('win-page').classList.add('active-page');
-            if(id === 'my') document.getElementById('my-page').classList.add('active-page');
+            document.querySelectorAll('.footer-item').forEach(f => f.classList.remove('footer-active'));
+            
+            if(id === 'win') {
+                document.getElementById('win-page').classList.add('active-page');
+                document.getElementById('footer-win').classList.add('footer-active');
+                refreshHistoryData(); // Har baar naya fake data load hoga
+            } else if(id === 'my') {
+                document.getElementById('my-page').classList.add('active-page');
+                document.getElementById('footer-my').classList.add('footer-active');
+            }
         };
 
+        // TAB SWITCHING WITH FAKE DATA
+        window.switchGameTab = (name) => {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('tab-active'));
+            event.target.classList.add('tab-active');
+            document.getElementById('active-tab-name').innerText = name;
+            refreshHistoryData(); 
+        };
+
+        function refreshHistoryData() {
+            const body = document.getElementById('history-body');
+            let html = '';
+            for(let i=0; i<8; i++) {
+                let num = Math.floor(Math.random() * 10);
+                let color = (num % 2 === 0) ? '#ef4444' : '#22c55e';
+                if(num === 0 || num === 5) color = '#a855f7';
+                html += `<tr><td>20260330${283-i}</td><td>3${Math.floor(10000+Math.random()*9000)}</td><td style="color:${color}">${num}</td><td><span class="dot" style="background:${color}"></span></td></tr>`;
+            }
+            body.innerHTML = html;
+        }
+
+        // BETTING LOGIC (LOW AMOUNT WINS)
         window.placeBet = async (color) => {
-            const amount = prompt(`Bet on ${color}:`, "10");
+            const amount = prompt(`Enter Bet Amount on ${color}:`, "10");
             if(amount >= 10) {
                 await updateDoc(doc(db, "users", currentUserId), { balance: increment(-parseInt(amount)) });
                 await setDoc(doc(db, "current_bets", Date.now().toString()), { selection: color, amount: parseInt(amount) });
-                alert("Bet Placed!");
+                alert("Bet Placed Successfully!");
             }
         };
 
@@ -141,17 +172,8 @@
             const betsSnap = await getDocs(collection(db, "current_bets"));
             let pool = { Green: 0, Red: 0, Violet: 0 };
             betsSnap.forEach(d => { pool[d.data().selection] += d.data().amount; });
-
-            // Logic: Jo color sabse sasta (low amount) hai wahi win karega
             const winColor = pool.Green <= pool.Red ? 'Green' : 'Red';
-            const colorHex = winColor === 'Green' ? '#22c55e' : '#ef4444';
-            const pNum = document.getElementById('p-num');
-
-            document.getElementById('history-body').insertAdjacentHTML('afterbegin', 
-                `<tr><td>${pNum.innerText}</td><td>34521</td><td>${winColor === 'Green' ? 1 : 2}</td><td><span class="dot" style="background:${colorHex}"></span></td></tr>`
-            );
-            pNum.innerText = parseInt(pNum.innerText) + 1;
-
+            refreshHistoryData(); // Update history UI
             const batchDelete = betsSnap.docs.map(d => deleteDoc(doc(db, "current_bets", d.id)));
             await Promise.all(batchDelete);
         }
@@ -162,11 +184,12 @@
             if(sec === 1) calculateWinner();
         }, 1000);
 
+        // AUTH & PROFILE
         document.getElementById('auth-confirm-btn').onclick = async () => {
             const m = document.getElementById('auth-mobile').value;
             const p = document.getElementById('auth-password').value;
             try {
-                const res = await signInWithEmailAndPassword(auth, m + "@wingo.com", p);
+                await signInWithEmailAndPassword(auth, m + "@wingo.com", p);
             } catch {
                 const res = await createUserWithEmailAndPassword(auth, m + "@wingo.com", p);
                 await setDoc(doc(db, "users", res.user.uid), { mobile: m, balance: 20, id: Math.floor(100000+Math.random()*900000) });
@@ -183,7 +206,7 @@
                     document.getElementById('my-mobile').innerText = d.mobile;
                     document.getElementById('my-id').innerText = d.id;
                 });
-                showPage('my');
+                showPage('my'); // Login ke baad My Page khulega
             }
         });
 
