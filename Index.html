@@ -11,13 +11,14 @@
         .page { display: none; width: 100%; min-height: 100vh; position: absolute; top: 0; left: 0; }
         .active-page { display: block !important; }
         #auth-page.active-page { display: flex !important; }
-        .profile-header { background-color: #007bff; color: white; padding: 25px; border-radius: 5px; margin: 10px; }
+        .profile-header { background: linear-gradient(to right, #007bff, #00c6ff); color: white; padding: 25px; border-radius: 15px; margin: 10px; }
         .footer-nav { background: white; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
         .footer-item { text-align: center; color: #888; font-size: 12px; cursor: pointer; }
         .footer-active { color: #007bff; }
-        .timer-btn { padding: 8px 12px; border-radius: 20px; border: 1px solid #ddd; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .timer-btn { padding: 8px 12px; border-radius: 20px; border: 1px solid #ddd; font-weight: bold; cursor: pointer; font-size: 11px; }
         .timer-active { background: #007bff; color: white; border-color: #007bff; }
-        .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }
+        .tab-btn { padding: 10px; flex: 1; text-align: center; font-weight: bold; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-active { border-bottom: 2px solid #007bff; color: #007bff; }
     </style>
 </head>
 <body>
@@ -27,12 +28,12 @@
         <div class="bg-gray-800 p-8 mx-6 rounded-3xl space-y-4 shadow-2xl">
             <input type="number" id="auth-mobile" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none" placeholder="Mobile Number">
             <input type="password" id="auth-password" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none" placeholder="Password">
-            <button id="auth-confirm-btn" class="w-full bg-yellow-500 p-4 rounded-xl font-bold text-black hover:bg-yellow-400 transition-all">LOGIN / REGISTER</button>
+            <button id="auth-confirm-btn" class="w-full bg-yellow-500 p-4 rounded-xl font-bold text-black">LOGIN / REGISTER</button>
         </div>
     </div>
 
     <div id="my-page" class="page">
-        <div class="profile-header shadow-md">
+        <div class="profile-header shadow-lg">
             <div class="flex items-center gap-4">
                 <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center"><i class="fa-solid fa-user text-3xl text-white"></i></div>
                 <div>
@@ -42,39 +43,51 @@
             </div>
             <p class="mt-4 text-xl font-extrabold italic">Available balance: ₹<span id="user-balance-my">0.00</span></p>
             <div class="flex gap-4 mt-4">
-                <button class="bg-green-500 px-6 py-2 rounded font-bold text-sm">Recharge</button>
-                <button class="bg-white text-gray-700 px-4 py-2 rounded font-bold text-sm">Change Nick Name</button>
+                <button onclick="alert('Send payment screenshot to Admin WhatsApp')" class="bg-green-500 px-6 py-2 rounded-lg font-bold text-sm shadow-md">Recharge</button>
+                <button onclick="requestWithdraw()" class="bg-orange-500 px-6 py-2 rounded-lg font-bold text-sm shadow-md">Withdraw</button>
             </div>
         </div>
-        <div class="mt-2 px-2 bg-white">
-            <div class="p-4 border-b flex justify-between items-center"><span class="flex items-center gap-3 text-gray-700"><i class="fa-solid fa-wallet text-purple-600"></i> Wallet</span> <i class="fa-solid fa-chevron-right text-gray-300"></i></div>
-            <div class="p-6"><button onclick="logout()" class="w-full bg-[#8B0000] text-white py-3 rounded-xl font-bold shadow-lg">Logout</button></div>
+        <div class="mt-4 bg-white mx-2 rounded-xl p-4 shadow-sm">
+            <div class="flex justify-between p-3 border-b"><span class="text-gray-600"><i class="fa-solid fa-wallet mr-2 text-blue-500"></i> Wallet</span><i class="fa-solid fa-chevron-right text-gray-300"></i></div>
+            <div class="flex justify-between p-3 border-b"><span class="text-gray-600"><i class="fa-solid fa-gear mr-2 text-gray-500"></i> Settings</span><i class="fa-solid fa-chevron-right text-gray-300"></i></div>
+            <button onclick="logout()" class="w-full mt-6 bg-red-800 text-white py-3 rounded-xl font-bold shadow-lg">Logout</button>
         </div>
     </div>
 
     <div id="win-page" class="page">
         <div class="bg-blue-600 p-6 text-white shadow-lg">
-            <p class="text-sm font-bold">Available balance: ₹<span id="user-balance-win">0.00</span></p>
-            <button class="bg-green-500 px-6 py-2 rounded mt-3 font-bold text-sm shadow-md">Recharge</button>
+            <p class="text-sm font-bold">Balance: ₹<span id="user-balance-win">0.00</span></p>
+            <button class="bg-green-500 px-4 py-1 rounded mt-2 text-xs font-bold">Recharge</button>
         </div>
-        <div class="flex justify-around bg-white p-3 border-b shadow-sm sticky top-0 z-50">
+        <div class="flex justify-around bg-white p-3 sticky top-0 z-50 shadow-sm">
             <div class="timer-btn timer-active" onclick="setTimeMode(1)">WinGo 1Min</div>
             <div class="timer-btn" onclick="setTimeMode(3)">WinGo 3Min</div>
             <div class="timer-btn" onclick="setTimeMode(5)">WinGo 5Min</div>
         </div>
         <div class="bg-white p-4 flex justify-between items-center border-b">
-            <div><p class="text-xs text-gray-500 uppercase">Period</p><h3 class="font-bold text-lg" id="p-num">20260330--</h3></div>
-            <div class="text-right"><p class="text-xs text-gray-500 uppercase">Count Down</p><h3 class="text-2xl font-black text-gray-800" id="countdown">00:00</h3></div>
+            <div><p class="text-xs text-gray-500">Period</p><h3 class="font-bold text-lg" id="p-num">20260330--</h3></div>
+            <div class="text-right"><p class="text-xs text-gray-500">Count Down</p><h3 class="text-2xl font-black text-gray-800" id="countdown">00:00</h3></div>
         </div>
         <div class="bg-white p-4 flex justify-between gap-2 border-b">
-            <button onclick="placeBet('Green')" class="bg-green-500 text-white p-3 rounded-lg font-bold w-1/3 shadow-md active:scale-95">Join Green</button>
-            <button onclick="placeBet('Violet')" class="bg-purple-500 text-white p-3 rounded-lg font-bold w-1/3 shadow-md active:scale-95">Join Violet</button>
-            <button onclick="placeBet('Red')" class="bg-red-500 text-white p-3 rounded-lg font-bold w-1/3 shadow-md active:scale-95">Join Red</button>
+            <button onclick="placeBet('Green')" class="bg-green-500 text-white p-3 rounded-lg font-bold w-1/3">Join Green</button>
+            <button onclick="placeBet('Violet')" class="bg-purple-500 text-white p-3 rounded-lg font-bold w-1/3">Join Violet</button>
+            <button onclick="placeBet('Red')" class="bg-red-500 text-white p-3 rounded-lg font-bold w-1/3">Join Red</button>
         </div>
-        <div class="bg-white p-2 mt-2">
+        
+        <div class="flex bg-white mt-2">
+            <div class="tab-btn tab-active" id="tab-game" onclick="switchTab('game')">Game History</div>
+            <div class="tab-btn" id="tab-my" onclick="switchTab('my')">My History</div>
+        </div>
+        <div id="game-history-content" class="bg-white p-2">
             <table class="w-full text-center text-sm">
-                <thead><tr class="text-gray-400 border-b"><th class="py-2">Period</th><th class="py-2">Price</th><th class="py-2">Number</th><th class="py-2">Result</th></tr></thead>
+                <thead><tr class="text-gray-400 border-b"><th class="py-2">Period</th><th class="py-2">Number</th><th class="py-2">Result</th></tr></thead>
                 <tbody id="history-body"></tbody>
+            </table>
+        </div>
+        <div id="my-history-content" class="bg-white p-2 hidden">
+            <table class="w-full text-center text-sm">
+                <thead><tr class="text-gray-400 border-b"><th class="py-2">Period</th><th class="py-2">Amount</th><th class="py-2">Status</th></tr></thead>
+                <tbody id="my-bet-history-body"></tbody>
             </table>
         </div>
     </div>
@@ -88,7 +101,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, getDocs, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAiFPc7w1rdbWfzgs5svUCCjy3wtZfFXRs",
@@ -104,52 +117,54 @@
         let currentUserId = null;
         let selectedTime = 1;
         let userBalance = 0;
+        let currentPeriod = "";
 
-        // --- NAVIGATION ---
+        // NAVIGATION
         window.showPage = (id) => {
             document.querySelectorAll('.page').forEach(p => { p.classList.remove('active-page'); p.style.display = 'none'; });
             document.querySelectorAll('.footer-item').forEach(f => f.classList.remove('footer-active'));
-            if(id === 'win') { document.getElementById('win-page').style.display = 'block'; document.getElementById('footer-win').classList.add('footer-active'); refreshHistory(); }
+            if(id === 'win') { document.getElementById('win-page').style.display = 'block'; document.getElementById('footer-win').classList.add('footer-active'); refreshGameHistory(); fetchMyHistory(); }
             else if(id === 'my') { document.getElementById('my-page').style.display = 'block'; document.getElementById('footer-my').classList.add('footer-active'); }
         };
 
-        // --- BETTING LOGIC (New & Fixed) ---
+        window.switchTab = (type) => {
+            document.getElementById('game-history-content').classList.toggle('hidden', type !== 'game');
+            document.getElementById('my-history-content').classList.toggle('hidden', type !== 'my');
+            document.getElementById('tab-game').classList.toggle('tab-active', type === 'game');
+            document.getElementById('tab-my').classList.toggle('tab-active', type === 'my');
+        };
+
+        // BETTING & WITHDRAWAL
         window.placeBet = async (color) => {
             const amount = prompt(`Enter Bet Amount on ${color}:`, "10");
-            if (amount !== null && amount !== "" && !isNaN(amount)) {
-                const betVal = parseInt(amount);
-                if (betVal < 10) return alert("Minimum bet is ₹10");
-                if (betVal > userBalance) return alert("Insufficient Balance!");
-
+            if (amount && !isNaN(amount) && amount >= 10) {
+                if (parseInt(amount) > userBalance) return alert("Insufficient Balance!");
                 try {
-                    // Update Balance & Save Bet
-                    await updateDoc(doc(db, "users", currentUserId), { balance: increment(-betVal) });
-                    await setDoc(doc(db, "current_bets", Date.now().toString()), {
-                        uid: currentUserId, selection: color, amount: betVal, mode: selectedTime
+                    const betId = Date.now().toString();
+                    await updateDoc(doc(db, "users", currentUserId), { balance: increment(-parseInt(amount)) });
+                    await setDoc(doc(db, "current_bets", betId), {
+                        uid: currentUserId, selection: color, amount: parseInt(amount), period: currentPeriod, status: "pending", time: new Date()
                     });
-                    alert(`Success: ₹${betVal} placed on ${color}`);
-                } catch (e) { alert("Error: Check Firebase Rules!"); }
+                    alert("Bet Placed Successfully!");
+                } catch (e) { alert("Error: Check Rules!"); }
             }
         };
 
-        window.setTimeMode = (time) => {
-            selectedTime = time;
-            document.querySelectorAll('.timer-btn').forEach(btn => {
-                btn.classList.remove('timer-active');
-                if(btn.innerText.includes(time + 'Min')) btn.classList.add('timer-active');
-            });
-            refreshHistory();
+        window.requestWithdraw = async () => {
+            const upi = prompt("Enter UPI ID:");
+            const amount = prompt("Enter Amount to Withdraw:");
+            if(upi && amount && amount >= 100) {
+                if(parseInt(amount) > userBalance) return alert("Insufficient Balance!");
+                await setDoc(doc(db, "withdrawals", Date.now().toString()), { uid: currentUserId, upi, amount: parseInt(amount), status: "pending" });
+                alert("Withdrawal request sent!");
+            } else { alert("Min withdrawal ₹100"); }
         };
 
-        function refreshHistory() {
-            const body = document.getElementById('history-body');
-            let html = '';
-            for(let i=0; i<10; i++) {
-                let n = Math.floor(Math.random()*10); let c = (n%2==0)?'#ef4444':'#22c55e';
-                html += `<tr class="border-b"><td class="py-3">202603${selectedTime}${283-i}</td><td>3${Math.floor(1000+Math.random()*9000)}</td><td style="color:${c}">${n}</td><td><span class="dot" style="background:${c}"></span></td></tr>`;
-            }
-            body.innerHTML = html;
-            document.getElementById('p-num').innerText = `202603${selectedTime}284`;
+        // TIMER & RESULT SIMULATION
+        function generatePeriod() {
+            const now = new Date();
+            currentPeriod = now.getFullYear() + "" + (now.getMonth()+1).toString().padStart(2,'0') + now.getDate() + selectedTime + Math.floor(now.getMinutes()/selectedTime);
+            document.getElementById('p-num').innerText = currentPeriod;
         }
 
         setInterval(() => {
@@ -157,20 +172,31 @@
             let rem = (selectedTime * 60) - (totalSec % (selectedTime * 60));
             let m = Math.floor(rem / 60); let s = rem % 60;
             document.getElementById('countdown').innerText = `${m<10?'0'+m:m}:${s<10?'0'+s:s}`;
-            if(rem === 1) refreshHistory();
+            if(rem === 59) { generatePeriod(); refreshGameHistory(); }
         }, 1000);
 
-        // --- AUTH LOGIC ---
-        document.getElementById('auth-confirm-btn').onclick = async () => {
-            const m = document.getElementById('auth-mobile').value; const p = document.getElementById('auth-password').value;
-            if(!m || !p) return alert("Enter Details");
-            try { await signInWithEmailAndPassword(auth, m + "@wingo.com", p); } 
-            catch {
-                const res = await createUserWithEmailAndPassword(auth, m + "@wingo.com", p);
-                await setDoc(doc(db, "users", res.user.uid), { mobile: m, balance: 20, id: Math.floor(100000+Math.random()*900000) });
-            }
-        };
+        async function fetchMyHistory() {
+            if(!currentUserId) return;
+            const q = query(collection(db, "current_bets"), where("uid", "==", currentUserId), orderBy("time", "desc"), limit(10));
+            const snap = await getDocs(q);
+            let html = "";
+            snap.forEach(doc => {
+                const data = doc.data();
+                html += `<tr class="border-b"><td class="py-2">${data.period}</td><td>₹${data.amount}</td><td class="text-orange-500">${data.status}</td></tr>`;
+            });
+            document.getElementById('my-bet-history-body').innerHTML = html || "<tr><td colspan='3'>No bets yet</td></tr>";
+        }
 
+        function refreshGameHistory() {
+            let html = '';
+            for(let i=0; i<8; i++) {
+                let n = Math.floor(Math.random()*10); let c = (n%2==0)?'#ef4444':'#22c55e';
+                html += `<tr class="border-b"><td class="py-2 text-gray-500">${parseInt(currentPeriod)-i}</td><td style="color:${c}" class="font-bold">${n}</td><td><span class="inline-block w-2 h-2 rounded-full" style="background:${c}"></span></td></tr>`;
+            }
+            document.getElementById('history-body').innerHTML = html;
+        }
+
+        // AUTH
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 currentUserId = user.uid;
@@ -185,11 +211,13 @@
                         document.getElementById('my-id').innerText = d.id;
                     }
                 });
+                generatePeriod();
                 showPage('my');
             } else { document.getElementById('auth-page').style.display = 'flex'; }
         });
 
         window.logout = () => signOut(auth).then(() => location.reload());
+        window.setTimeMode = (t) => { selectedTime = t; generatePeriod(); refreshGameHistory(); };
     </script>
 </body>
 </html>
