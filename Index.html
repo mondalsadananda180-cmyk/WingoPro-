@@ -8,9 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f5f5f5; font-family: sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        /* Page handling fixes */
         .page { display: none; width: 100%; min-height: 100vh; }
         .active-page { display: block !important; }
-        #auth-page.active-page { display: flex !important; }
+        #auth-page.active-page { display: flex !important; align-items: center; justify-content: center; position: fixed; top:0; left:0; right:0; bottom:0; }
+        
         .profile-header { background: linear-gradient(135deg, #007bff, #00c6ff); color: white; padding: 25px; border-radius: 20px; margin: 10px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
         .footer-nav { background: white; border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
         .footer-item { text-align: center; color: #888; font-size: 11px; cursor: pointer; transition: 0.3s; }
@@ -23,18 +25,20 @@
 </head>
 <body>
 
-    <div id="auth-page" class="page active-page flex flex-col justify-center bg-gray-900 z-[2000]">
-        <h1 class="text-4xl font-black text-yellow-500 text-center mb-8 italic tracking-tighter">WIN-GO GOLD</h1>
-        <div class="bg-gray-800 p-8 mx-6 rounded-3xl space-y-4 shadow-2xl border border-gray-700">
-            <div class="space-y-2">
-                <label class="text-gray-400 text-sm ml-1">Mobile Number</label>
-                <input type="number" id="auth-mobile" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Enter Mobile">
+    <div id="auth-page" class="page active-page bg-gray-900 z-[2000]">
+        <div class="w-full">
+            <h1 class="text-4xl font-black text-yellow-500 text-center mb-8 italic tracking-tighter">WIN-GO GOLD</h1>
+            <div class="bg-gray-800 p-8 mx-6 rounded-3xl space-y-4 shadow-2xl border border-gray-700">
+                <div class="space-y-2">
+                    <label class="text-gray-400 text-sm ml-1">Mobile Number</label>
+                    <input type="number" id="auth-mobile" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Enter Mobile">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-gray-400 text-sm ml-1">Password</label>
+                    <input type="password" id="auth-password" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Enter Password">
+                </div>
+                <button id="auth-confirm-btn" class="w-full bg-yellow-500 hover:bg-yellow-400 transition-all p-4 rounded-xl font-black text-black uppercase tracking-widest shadow-lg">Login / Register</button>
             </div>
-            <div class="space-y-2">
-                <label class="text-gray-400 text-sm ml-1">Password</label>
-                <input type="password" id="auth-password" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Enter Password">
-            </div>
-            <button id="auth-confirm-btn" class="w-full bg-yellow-500 hover:bg-yellow-400 transition-all p-4 rounded-xl font-black text-black uppercase tracking-widest shadow-lg">Login / Register</button>
         </div>
     </div>
 
@@ -42,7 +46,7 @@
         <div class="bg-blue-600 p-6 text-white shadow-lg text-center rounded-b-[40px]">
             <p class="text-xs font-bold opacity-70 uppercase tracking-widest">Wallet Balance</p>
             <h1 class="text-4xl font-black mt-1">₹<span id="user-balance-win">0.00</span></h1>
-            <button onclick="showPage('my')" class="bg-green-500 hover:bg-green-400 px-8 py-2 rounded-full mt-4 font-bold text-sm shadow-lg transition-all active:scale-95">Deposit Now</button>
+            <button onclick="showPage('my')" class="bg-green-500 hover:bg-green-400 px-8 py-2 rounded-full mt-4 font-bold text-sm shadow-lg">Deposit Now</button>
         </div>
 
         <div class="flex justify-around bg-white p-3 mx-4 -mt-6 rounded-2xl shadow-xl z-50 relative">
@@ -52,68 +56,44 @@
         </div>
 
         <div class="bg-white m-4 p-5 rounded-2xl flex justify-between items-center shadow-md border-l-[6px] border-blue-500">
-            <div>
-                <p class="text-[10px] text-gray-400 uppercase font-bold">Current Period</p>
-                <h3 class="font-black text-xl text-gray-800 tracking-wider" id="p-num">Loading...</h3>
-            </div>
-            <div class="text-right">
-                <p class="text-[10px] text-gray-400 uppercase font-bold text-center">Time Left</p>
-                <h3 class="text-3xl font-black text-blue-600 font-mono" id="countdown">00:00</h3>
-            </div>
+            <div><p class="text-[10px] text-gray-400 font-bold">PERIOD</p><h3 class="font-black text-xl" id="p-num">...</h3></div>
+            <div class="text-right"><p class="text-[10px] text-gray-400 font-bold">TIME LEFT</p><h3 class="text-3xl font-black text-blue-600" id="countdown">00:00</h3></div>
         </div>
 
         <div class="bg-white mx-4 p-4 rounded-2xl flex justify-between gap-3 shadow-md">
-            <button onclick="placeBet('Green')" class="bg-green-500 text-white py-4 rounded-xl font-black flex-1 shadow-lg active:scale-90 transition-all uppercase">Green</button>
-            <button onclick="placeBet('Violet')" class="bg-purple-500 text-white py-4 rounded-xl font-black flex-1 shadow-lg active:scale-90 transition-all uppercase">Violet</button>
-            <button onclick="placeBet('Red')" class="bg-red-500 text-white py-4 rounded-xl font-black flex-1 shadow-lg active:scale-90 transition-all uppercase">Red</button>
-        </div>
-        
-        <div class="flex bg-white mt-6 mx-4 rounded-t-xl overflow-hidden shadow-sm">
-            <div class="tab-btn tab-active" id="tab-game" onclick="switchTab('game')">Game Record</div>
-            <div class="tab-btn" id="tab-my" onclick="switchTab('my')">My Records</div>
+            <button onclick="placeBet('Green')" class="bg-green-500 text-white py-4 rounded-xl font-black flex-1">Green</button>
+            <button onclick="placeBet('Violet')" class="bg-purple-500 text-white py-4 rounded-xl font-black flex-1">Violet</button>
+            <button onclick="placeBet('Red')" class="bg-red-500 text-white py-4 rounded-xl font-black flex-1">Red</button>
         </div>
 
-        <div id="game-history-content" class="bg-white mx-4 mb-4 rounded-b-xl shadow-md p-2">
+        <div id="game-history-content" class="bg-white m-4 rounded-xl shadow-md p-2">
             <table class="w-full text-center text-xs">
-                <thead><tr class="text-gray-400 border-b uppercase font-bold"><th class="py-3">Period</th><th class="py-3">Num</th><th class="py-3">Result</th></tr></thead>
+                <thead><tr class="text-gray-400 border-b"><th class="py-3">Period</th><th class="py-3">Num</th><th class="py-3">Result</th></tr></thead>
                 <tbody id="history-body"></tbody>
-            </table>
-        </div>
-
-        <div id="my-history-content" class="bg-white mx-4 mb-4 rounded-b-xl shadow-md p-2 hidden">
-            <table class="w-full text-center text-xs">
-                <thead><tr class="text-gray-400 border-b uppercase font-bold"><th class="py-3">Period</th><th class="py-3">Amount</th><th class="py-3">Status</th></tr></thead>
-                <tbody id="my-bet-history-body"></tbody>
             </table>
         </div>
     </div>
 
     <div id="my-page" class="page">
-        <div class="profile-header shadow-lg">
+        <div class="profile-header">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center border-2 border-white/50"><i class="fa-solid fa-user-secret text-3xl"></i></div>
+                <div class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center"><i class="fa-solid fa-user text-2xl"></i></div>
                 <div>
-                    <p class="font-black text-xl tracking-tight">Member_<span id="my-mobile">0000</span></p>
-                    <p class="text-xs opacity-70">UID: <span id="my-id">---</span></p>
+                    <p class="font-black text-xl">Member_<span id="my-mobile">...</span></p>
+                    <p class="text-xs opacity-70">UID: <span id="my-id">...</span></p>
                 </div>
             </div>
-            <p class="mt-6 text-2xl font-black italic tracking-tighter">Balance: ₹<span id="user-balance-my">0.00</span></p>
+            <p class="mt-6 text-2xl font-black">Balance: ₹<span id="user-balance-my">0.00</span></p>
             <div class="flex gap-3 mt-4">
-                <button onclick="recharge()" class="flex-1 bg-white text-blue-600 py-3 rounded-xl font-black text-sm shadow-lg active:scale-95">RECHARGE</button>
-                <button onclick="requestWithdraw()" class="flex-1 bg-orange-500 text-white py-3 rounded-xl font-black text-sm shadow-lg active:scale-95">WITHDRAW</button>
+                <button onclick="alert('Recharge Coming Soon')" class="flex-1 bg-white text-blue-600 py-3 rounded-xl font-black text-sm">RECHARGE</button>
+                <button onclick="logout()" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-black text-sm">LOGOUT</button>
             </div>
-        </div>
-        <div class="mt-4 bg-white mx-4 rounded-2xl overflow-hidden shadow-md">
-            <div class="p-4 border-b flex justify-between items-center"><span class="font-bold text-gray-700"><i class="fa-solid fa-shield-halved mr-3 text-blue-500"></i> Account Security</span><i class="fa-solid fa-chevron-right text-gray-300"></i></div>
-            <div class="p-4 border-b flex justify-between items-center" onclick="alert('Join Telegram for updates')"><span class="font-bold text-gray-700"><i class="fa-solid fa-paper-plane mr-3 text-sky-500"></i> Customer Service</span><i class="fa-solid fa-chevron-right text-gray-300"></i></div>
-            <button onclick="logout()" class="w-full p-4 text-red-600 font-black uppercase text-sm bg-red-50 shadow-inner">Sign Out</button>
         </div>
     </div>
 
-    <div class="footer-nav">
-        <div class="footer-item" onclick="showPage('home')"><i class="fa-solid fa-house-chimney text-xl"></i><p class="mt-1">Home</p></div>
-        <div class="footer-item" id="footer-win" onclick="showPage('win')"><i class="fa-solid fa-gamepad text-xl"></i><p class="mt-1">WinGo</p></div>
-        <div class="footer-item" id="footer-my" onclick="showPage('my')"><i class="fa-solid fa-circle-user text-xl"></i><p class="mt-1">Account</p></div>
+    <div class="footer-nav" id="main-nav" style="display: none;">
+        <div class="footer-item" id="nav-win" onclick="showPage('win')"><i class="fa-solid fa-gamepad text-xl"></i><p>WinGo</p></div>
+        <div class="footer-item" id="nav-my" onclick="showPage('my')"><i class="fa-solid fa-user text-xl"></i><p>Account</p></div>
     </div>
 
     <script type="module">
@@ -121,7 +101,6 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, collection, query, where, orderBy, limit, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Config (Added as per your previous code)
         const firebaseConfig = {
             apiKey: "AIzaSyAiFPc7w1rdbWfzgs5svUCCjy3wtZfFXRs",
             authDomain: "gold-ba06b.firebaseapp.com",
@@ -136,124 +115,32 @@
 
         let currentUserId = null;
         let userBalance = 0;
-        let activeGame = "1min"; 
+        let activeGame = "1min";
         let currentPeriod = "";
 
-        // NAVIGATION
+        // UI Navigation Fix
         window.showPage = (id) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.querySelectorAll('.footer-item').forEach(f => f.classList.remove('footer-active'));
-            if(id === 'win') { document.getElementById('win-page').classList.add('active-page'); document.getElementById('footer-win').classList.add('footer-active'); }
-            else if(id === 'my') { document.getElementById('my-page').classList.add('active-page'); document.getElementById('footer-my').classList.add('footer-active'); }
-            else { document.getElementById('win-page').classList.add('active-page'); } 
+            
+            const targetPage = document.getElementById(id + '-page');
+            if(targetPage) {
+                targetPage.classList.add('active-page');
+                if(id !== 'auth') document.getElementById('main-nav').style.display = 'flex';
+                const navItem = document.getElementById('nav-' + id);
+                if(navItem) navItem.classList.add('footer-active');
+            }
         };
 
-        window.switchTab = (type) => {
-            document.getElementById('game-history-content').classList.toggle('hidden', type !== 'game');
-            document.getElementById('my-history-content').classList.toggle('hidden', type !== 'my');
-            document.getElementById('tab-game').classList.toggle('tab-active', type === 'game');
-            document.getElementById('tab-my').classList.toggle('tab-active', type === 'my');
-            if(type === 'my') fetchMyHistory();
-        };
-
-        // AUTO TIMER & PERIOD GENERATOR
-        function startAutomation() {
-            setInterval(() => {
-                const now = new Date();
-                const minutes = now.getMinutes();
-                const seconds = now.getSeconds();
-
-                let duration = (activeGame === "1min") ? 60 : (activeGame === "3min" ? 180 : 300);
-                let totalSec = (minutes * 60) + seconds;
-                let remaining = duration - (totalSec % duration);
-
-                const dateStr = now.toISOString().slice(0,10).replace(/-/g, "");
-                const sequence = Math.floor(totalSec / duration);
-                const newPeriod = dateStr + sequence.toString().padStart(4, '0');
-
-                if (newPeriod !== currentPeriod) {
-                    currentPeriod = newPeriod;
-                    document.getElementById('p-num').innerText = currentPeriod;
-                    loadGameHistory(); 
-                }
-
-                document.getElementById('countdown').innerText = `00:${remaining.toString().padStart(2, '0')}`;
-
-                if (remaining === 1) {
-                    calculateProfitResult(currentPeriod, activeGame);
-                }
-            }, 1000);
-        }
-
-        // LOW-BET WINNING LOGIC
-        async function calculateProfitResult(period, game) {
-            const betsRef = collection(db, "current_bets");
-            const q = query(betsRef, where("period", "==", period), where("game", "==", game));
-            const snap = await getDocs(q);
-
-            let pool = { Green: 0, Red: 0, Violet: 0 };
-            snap.forEach(d => { pool[d.data().selection] += d.data().amount; });
-
-            let winColor = (pool.Red <= pool.Green) ? 'Red' : 'Green';
-            let winNum = (winColor === 'Red') ? [2,4,6,8][Math.floor(Math.random()*4)] : [1,3,7,9][Math.floor(Math.random()*4)];
-
-            await setDoc(doc(db, "history_" + game, period), {
-                period, number: winNum, color: winColor, time: serverTimestamp()
-            });
-        }
-
-        window.switchGame = (game) => {
-            activeGame = game;
-            ["1min", "3min", "5min"].forEach(g => {
-                document.getElementById('btn-'+g).className = (g === game) ? "timer-btn timer-active" : "timer-btn";
-            });
-            loadGameHistory();
-            fetchMyHistory();
-        };
-
-        window.placeBet = async (color) => {
-            const amt = prompt(`Enter Bet Amount on ${color}:`, "10");
-            if (!amt || isNaN(amt) || amt < 10) return;
-            if (amt > userBalance) return alert("Insufficient Balance!");
-
-            const betId = "BET_" + Date.now();
-            await updateDoc(doc(db, "users", currentUserId), { balance: increment(-parseInt(amt)) });
-            await setDoc(doc(db, "current_bets", betId), {
-                uid: currentUserId, selection: color, amount: parseInt(amt), period: currentPeriod, game: activeGame, status: "pending", timestamp: serverTimestamp()
-            });
-            alert("Bet Placed!");
-        };
-
-        async function loadGameHistory() {
-            const q = query(collection(db, "history_" + activeGame), orderBy("time", "desc"), limit(10));
-            onSnapshot(q, (snap) => {
-                let html = "";
-                snap.forEach(doc => {
-                    const d = doc.data();
-                    let c = (d.color === 'Red') ? '#ef4444' : '#22c55e';
-                    html += `<tr class="border-b"><td class="py-3 text-gray-500 font-mono">${d.period}</td><td class="font-black" style="color:${c}">${d.number}</td><td><span class="inline-block w-2 h-2 rounded-full" style="background:${c}"></span></td></tr>`;
-                });
-                document.getElementById('history-body').innerHTML = html || "<tr><td colspan='3' class='py-4'>Wait for result...</td></tr>";
-            });
-        }
-
-        async function fetchMyHistory() {
-            if(!currentUserId) return;
-            const q = query(collection(db, "current_bets"), where("uid", "==", currentUserId), where("game", "==", activeGame), orderBy("timestamp", "desc"), limit(10));
-            const snap = await getDocs(q);
-            let html = "";
-            snap.forEach(d => {
-                const data = d.data();
-                let colorClass = (data.status === 'Won') ? 'text-green-500' : (data.status === 'Lost' ? 'text-red-500' : 'text-orange-500');
-                html += `<tr class="border-b"><td class="py-3 text-[10px]">${data.period}</td><td class="font-bold">₹${data.amount}</td><td class="${colorClass} font-black text-[10px] uppercase">${data.status}</td></tr>`;
-            });
-            document.getElementById('my-bet-history-body').innerHTML = html || "<tr><td colspan='3' class='py-4'>No history</td></tr>";
-        }
-
+        // Auth State Listener
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 currentUserId = user.uid;
+                // Hide Login, Show Game
                 document.getElementById('auth-page').classList.remove('active-page');
+                showPage('win');
+                
+                // Fetch User Data
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     const d = snap.data();
                     if(d) {
@@ -265,26 +152,72 @@
                     }
                 });
                 startAutomation();
-                showPage('win');
             } else {
-                document.getElementById('auth-page').classList.add('active-page');
+                currentUserId = null;
+                document.getElementById('main-nav').style.display = 'none';
+                showPage('auth');
             }
         });
 
+        // Login / Register Function
         document.getElementById('auth-confirm-btn').onclick = async () => {
             const m = document.getElementById('auth-mobile').value;
             const p = document.getElementById('auth-password').value;
-            if(m.length < 10) return alert("Valid mobile number required!");
-            try { 
-                await signInWithEmailAndPassword(auth, m + "@wingo.com", p); 
-            } catch {
-                const res = await createUserWithEmailAndPassword(auth, m + "@wingo.com", p);
-                await setDoc(doc(db, "users", res.user.uid), { mobile: m, balance: 20, id: Math.floor(100000+Math.random()*900000) });
+            if(m.length < 10) return alert("Enter 10 digit mobile number");
+
+            try {
+                // Try Login
+                await signInWithEmailAndPassword(auth, m + "@wingo.com", p);
+            } catch (err) {
+                // If user doesn't exist, Register
+                try {
+                    const res = await createUserWithEmailAndPassword(auth, m + "@wingo.com", p);
+                    await setDoc(doc(db, "users", res.user.uid), { 
+                        mobile: m, 
+                        balance: 20, 
+                        id: Math.floor(100000 + Math.random() * 900000) 
+                    });
+                } catch (regErr) {
+                    alert("Auth Error: " + regErr.message);
+                }
             }
         };
 
-        window.recharge = () => alert("Send payment to UPI: YOUR_UPI_ID_HERE. Then send screenshot to Admin.");
+        // --- TIMER LOGIC ---
+        function startAutomation() {
+            setInterval(() => {
+                const now = new Date();
+                let duration = (activeGame === "1min") ? 60 : (activeGame === "3min" ? 180 : 300);
+                let totalSec = (now.getMinutes() * 60) + now.getSeconds();
+                let remaining = duration - (totalSec % duration);
+
+                const dateStr = now.toISOString().slice(0,10).replace(/-/g, "");
+                const newPeriod = dateStr + Math.floor(totalSec / duration).toString().padStart(4, '0');
+
+                if (newPeriod !== currentPeriod) {
+                    currentPeriod = newPeriod;
+                    document.getElementById('p-num').innerText = currentPeriod;
+                    loadHistory();
+                }
+                document.getElementById('countdown').innerText = `00:${remaining.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        async function loadHistory() {
+            const q = query(collection(db, "history_" + activeGame), orderBy("time", "desc"), limit(10));
+            onSnapshot(q, (snap) => {
+                let html = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    let color = (d.color === 'Red') ? 'text-red-500' : 'text-green-500';
+                    html += `<tr class="border-b"><td class="py-3">${d.period}</td><td class="font-bold ${color}">${d.number}</td><td>${d.color}</td></tr>`;
+                });
+                document.getElementById('history-body').innerHTML = html;
+            });
+        }
+
         window.logout = () => signOut(auth).then(() => location.reload());
+        window.switchGame = (game) => { activeGame = game; loadHistory(); };
 
     </script>
 </body>
