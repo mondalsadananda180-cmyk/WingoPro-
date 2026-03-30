@@ -7,32 +7,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f5f5f5; font-family: sans-serif; }
-        .page { display: none; }
-        .active-page { display: block !important; }
+        body { background-color: #f5f5f5; font-family: sans-serif; margin: 0; padding: 0; }
+        #auth-page, #home-page { display: none; } /* Default hidden to prevent flickering */
         .profile-header { background-color: #007bff; color: white; padding: 25px; border-radius: 5px; margin: 10px; position: relative; }
         .list-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 12px; color: #444; font-size: 14px; }
-        .footer-nav { background: white; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; }
+        .footer-nav { background: white; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
         .footer-item { text-align: center; color: #888; font-size: 12px; }
         .footer-active { color: #007bff; }
     </style>
 </head>
 <body>
 
-    <div id="auth-page" class="page active-page flex flex-col justify-center p-6 min-h-screen bg-gray-900">
-         <h1 class="text-3xl font-bold text-yellow-500 text-center mb-8 italic">WIN-GO GOLD</h1>
-         <div class="bg-gray-800 p-8 rounded-3xl space-y-4">
-            <input type="number" id="auth-mobile" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none" placeholder="Mobile Number">
-            <input type="password" id="auth-password" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none" placeholder="Password">
-            <button id="auth-confirm-btn" class="w-full bg-yellow-500 p-4 rounded-xl font-bold text-black uppercase">Login / Register</button>
+    <div id="auth-page" class="flex-col justify-center p-6 min-h-screen bg-[#0a0e14]">
+         <div class="text-center mb-10">
+            <h1 class="text-4xl font-black text-yellow-500 italic">WIN-GO GOLD</h1>
+         </div>
+         <div class="bg-[#1a1f26] p-8 rounded-[2.5rem] border border-gray-800 shadow-2xl">
+            <div class="space-y-5">
+                <input type="number" id="auth-mobile" class="w-full bg-[#090b0e] border border-gray-800 p-4 rounded-2xl text-white outline-none" placeholder="Mobile Number">
+                <input type="password" id="auth-password" class="w-full bg-[#090b0e] border border-gray-800 p-4 rounded-2xl text-white outline-none" placeholder="Password">
+                <button id="auth-confirm-btn" class="w-full bg-yellow-500 text-black font-black py-4 rounded-2xl uppercase tracking-widest shadow-lg">Login / Register</button>
+            </div>
          </div>
     </div>
 
-    <div id="home-page" class="page">
+    <div id="home-page">
         <div class="profile-header">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white text-3xl">
-                    <i class="fa-solid fa-user"></i>
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-white text-3xl overflow-hidden">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky" alt="avatar">
                 </div>
                 <div>
                     <p class="font-bold text-lg">User:member_<span id="display-user-mobile">--</span></p>
@@ -42,16 +45,16 @@
                     <i class="fa-solid fa-bell text-xl"></i>
                 </div>
             </div>
-            <p class="mt-4 text-sm">Mobile: <span id="display-full-mobile">--</span></p>
-            <p class="mt-2 text-lg font-bold">Available balance: ₹<span id="user-balance">0.00</span></p>
+            <p class="mt-4 text-sm font-medium">Mobile: +<span id="display-full-mobile">--</span></p>
+            <p class="mt-2 text-xl font-extrabold italic">Available balance: ₹<span id="user-balance">0.00</span></p>
             
             <div class="flex gap-4 mt-4">
-                <button class="bg-green-500 px-6 py-2 rounded font-bold text-sm">Recharge</button>
-                <button class="bg-white text-gray-700 px-4 py-2 rounded font-bold text-sm">Change Nick Name</button>
+                <button class="bg-green-500 px-6 py-2 rounded font-bold text-sm shadow-md">Recharge</button>
+                <button class="bg-white text-gray-700 px-4 py-2 rounded font-bold text-sm shadow-sm">Change Nick Name</button>
             </div>
         </div>
 
-        <div class="mt-2 mb-20">
+        <div class="mt-2 mb-24">
             <div class="list-item"><i class="fa-solid fa-clipboard-list text-purple-500"></i> Bonus Record</div>
             <div class="list-item"><i class="fa-solid fa-gift text-purple-400"></i> Promotion</div>
             <div class="list-item flex justify-between">
@@ -60,17 +63,11 @@
             </div>
             <div class="list-item"><i class="fa-solid fa-credit-card text-blue-400"></i> Bank Card</div>
             <div class="list-item"><i class="fa-solid fa-location-dot text-red-400"></i> Address</div>
-            <div class="list-item flex justify-between">
-                <div class="flex items-center gap-3"><i class="fa-solid fa-shield-halved text-blue-600"></i> Account Security</div>
-                <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
-            </div>
-            <div class="list-item flex justify-between">
-                <div class="flex items-center gap-3"><i class="fa-solid fa-download text-blue-500"></i> App Download</div>
-                <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
-            </div>
+            <div class="list-item"><i class="fa-solid fa-shield-halved text-blue-600"></i> Account Security</div>
+            <div class="list-item"><i class="fa-solid fa-download text-blue-500"></i> App Download</div>
             
-            <div class="p-4">
-                <button onclick="logout()" class="w-full bg-gray-400 text-white py-3 rounded-lg font-bold text-lg">Logout</button>
+            <div class="p-6">
+                <button onclick="logout()" class="w-full bg-gray-400 text-white py-3 rounded-xl font-bold text-lg shadow-inner">Logout</button>
             </div>
         </div>
 
@@ -101,37 +98,52 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Instant navigation function
+        function showPage(pageId) {
+            document.getElementById('auth-page').style.display = 'none';
+            document.getElementById('home-page').style.display = 'none';
+            const target = document.getElementById(pageId + '-page');
+            target.style.display = (pageId === 'auth') ? 'flex' : 'block';
+        }
+
         document.getElementById('auth-confirm-btn').onclick = async () => {
             const mobile = document.getElementById('auth-mobile').value;
             const pass = document.getElementById('auth-password').value;
+            if(!mobile || !pass) return alert("Fill all details!");
             const email = mobile + "@wingogold.com";
             try {
-                // Pehle login try karein, fail hua toh register
                 try {
                     await signInWithEmailAndPassword(auth, email, pass);
                 } catch {
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
-                    await setDoc(doc(db, "users", res.user.uid), { mobile, balance: 20.0, id: Math.floor(1000000 + Math.random() * 9000000) });
+                    const randomId = Math.floor(1000000 + Math.random() * 9000000);
+                    await setDoc(doc(db, "users", res.user.uid), { mobile, balance: 20.0, id: randomId });
                 }
-            } catch (e) { alert(e.message); }
+            } catch (e) { alert("Error: " + e.message); }
         };
 
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 const mobile = user.email.split('@')[0];
-                document.getElementById('display-user-mobile').innerText = "+" + mobile;
-                document.getElementById('display-full-mobile').innerText = "+" + mobile;
+                document.getElementById('display-user-mobile').innerText = mobile;
+                document.getElementById('display-full-mobile').innerText = mobile;
                 
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     if(snap.exists()){
                         document.getElementById('user-balance').innerText = snap.data().balance.toFixed(2);
-                        document.getElementById('display-user-id').innerText = snap.data().id || "1602499";
+                        document.getElementById('display-user-id').innerText = snap.data().id || "7680695";
                     }
                 });
-                document.getElementById('auth-page').style.display = 'none';
-                document.getElementById('home-page').style.display = 'block';
+                showPage('home'); // Seedha profile par le jayega
             } else {
-                document.getElementById('auth-page').style.display = 'flex';
+                showPage('auth'); // Login page dikhayega
+            }
+        });
+
+        window.logout = () => signOut(auth);
+    </script>
+</body>
+</html>
                 document.getElementById('home-page').style.display = 'none';
             }
         });
