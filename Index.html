@@ -8,33 +8,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f5f5f5; font-family: sans-serif; margin: 0; padding-bottom: 80px; }
-        .page { display: none; }
+        /* Sabhi pages shuruat mein hide rahenge */
+        .page { display: none; width: 100%; min-height: 100vh; position: absolute; top: 0; left: 0; }
+        /* Sirf active page dikhega */
         .active-page { display: block !important; }
+        #auth-page.active-page { display: flex !important; }
+        
         .profile-header { background-color: #007bff; color: white; padding: 25px; border-radius: 5px; margin: 10px; }
-        .footer-nav { background: white; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .footer-nav { background: white; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
         .footer-item { text-align: center; color: #888; font-size: 12px; cursor: pointer; }
         .footer-active { color: #007bff; }
-        .timer-btn { padding: 8px 15px; border-radius: 20px; border: 1px solid #ddd; font-weight: bold; cursor: pointer; }
+        .timer-btn { padding: 8px 12px; border-radius: 20px; border: 1px solid #ddd; font-weight: bold; cursor: pointer; font-size: 12px; }
         .timer-active { background: #007bff; color: white; border-color: #007bff; }
         .dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
 <body>
 
-    <div id="auth-page" class="page active-page flex flex-col justify-center min-h-screen p-6 bg-gray-900">
+    <div id="auth-page" class="page active-page flex flex-col justify-center bg-gray-900 z-[2000]">
         <h1 class="text-3xl font-black text-yellow-500 text-center mb-8 italic">WIN-GO GOLD</h1>
-        <div class="bg-gray-800 p-8 rounded-3xl space-y-4">
+        <div class="bg-gray-800 p-8 mx-6 rounded-3xl space-y-4 shadow-2xl">
             <input type="number" id="auth-mobile" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none" placeholder="Mobile Number">
             <input type="password" id="auth-password" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none" placeholder="Password">
-            <button id="auth-confirm-btn" class="w-full bg-yellow-500 p-4 rounded-xl font-bold text-black">LOGIN / REGISTER</button>
+            <button id="auth-confirm-btn" class="w-full bg-yellow-500 p-4 rounded-xl font-bold text-black hover:bg-yellow-400 transition-all">LOGIN / REGISTER</button>
         </div>
     </div>
 
     <div id="my-page" class="page">
-        <div class="profile-header">
+        <div class="profile-header shadow-md">
             <div class="flex items-center gap-4">
                 <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                    <i class="fa-solid fa-user text-3xl"></i>
+                    <i class="fa-solid fa-user text-3xl text-white"></i>
                 </div>
                 <div>
                     <p class="font-bold text-lg">User:member_<span id="my-mobile">--</span></p>
@@ -43,48 +47,53 @@
             </div>
             <p class="mt-4 text-xl font-extrabold italic">Available balance: ₹<span id="user-balance-my">0.00</span></p>
             <div class="flex gap-4 mt-4">
-                <button class="bg-green-500 px-6 py-2 rounded font-bold text-sm">Recharge</button>
+                <button class="bg-green-500 hover:bg-green-600 px-6 py-2 rounded font-bold text-sm transition-colors">Recharge</button>
                 <button class="bg-white text-gray-700 px-4 py-2 rounded font-bold text-sm">Change Nick Name</button>
             </div>
         </div>
         <div class="mt-2 px-2 bg-white">
-            <div class="p-4 border-b flex justify-between items-center"><span class="flex items-center gap-3"><i class="fa-solid fa-wallet text-purple-600"></i> Wallet</span> <i class="fa-solid fa-chevron-right text-gray-400"></i></div>
-            <div class="p-4 border-b flex justify-between items-center"><span class="flex items-center gap-3"><i class="fa-solid fa-shield-halved text-blue-600"></i> Security</span> <i class="fa-solid fa-chevron-right text-gray-400"></i></div>
-            <div class="p-6"><button onclick="logout()" class="w-full bg-[#8B0000] text-white py-3 rounded-xl font-bold shadow-lg">Logout</button></div>
+            <div class="p-4 border-b flex justify-between items-center"><span class="flex items-center gap-3 text-gray-700"><i class="fa-solid fa-wallet text-purple-600"></i> Wallet</span> <i class="fa-solid fa-chevron-right text-gray-300"></i></div>
+            <div class="p-4 border-b flex justify-between items-center"><span class="flex items-center gap-3 text-gray-700"><i class="fa-solid fa-shield-halved text-blue-600"></i> Security</span> <i class="fa-solid fa-chevron-right text-gray-300"></i></div>
+            <div class="p-6">
+                <button onclick="logout()" class="w-full bg-[#8B0000] text-white py-3 rounded-xl font-bold shadow-lg active:scale-95 transition-transform">Logout</button>
+            </div>
         </div>
     </div>
 
     <div id="win-page" class="page">
-        <div class="bg-blue-600 p-6 text-white">
+        <div class="bg-blue-600 p-6 text-white shadow-lg">
             <p class="text-sm">Available balance: ₹<span id="user-balance-win">0.00</span></p>
-            <button class="bg-green-500 px-6 py-2 rounded mt-3 font-bold text-sm">Recharge</button>
+            <div class="flex gap-3">
+                <button class="bg-green-500 px-6 py-2 rounded mt-3 font-bold text-sm shadow-md">Recharge</button>
+                <button class="bg-white text-blue-600 px-6 py-2 rounded mt-3 font-bold text-sm shadow-md">Read Rule</button>
+            </div>
         </div>
-        <div class="flex justify-around bg-white p-3 border-b shadow-sm">
+        <div class="flex justify-around bg-white p-3 border-b shadow-sm sticky top-0 z-50">
             <div class="timer-btn timer-active" onclick="setTimeMode(1)">WinGo 1Min</div>
             <div class="timer-btn" onclick="setTimeMode(3)">WinGo 3Min</div>
             <div class="timer-btn" onclick="setTimeMode(5)">WinGo 5Min</div>
         </div>
         <div class="bg-white p-4 flex justify-between items-center border-b">
-            <div><p class="text-xs text-gray-500">Period</p><h3 class="font-bold text-lg" id="p-num">20260330284</h3></div>
-            <div class="text-right"><p class="text-xs text-gray-500">Count Down</p><h3 class="text-2xl font-black text-gray-800" id="countdown">00:00</h3></div>
+            <div><p class="text-xs text-gray-500 uppercase tracking-wider">Period</p><h3 class="font-bold text-lg" id="p-num">20260330--</h3></div>
+            <div class="text-right"><p class="text-xs text-gray-500 uppercase tracking-wider">Count Down</p><h3 class="text-2xl font-black text-gray-800" id="countdown">00:00</h3></div>
         </div>
-        <div class="bg-white p-4 flex justify-between gap-1 border-b">
-            <button onclick="placeBet('Green')" class="bg-green-500 text-white p-3 rounded font-bold w-1/3">Join Green</button>
-            <button onclick="placeBet('Violet')" class="bg-purple-500 text-white p-3 rounded font-bold w-1/3">Join Violet</button>
-            <button onclick="placeBet('Red')" class="bg-red-500 text-white p-3 rounded font-bold w-1/3">Join Red</button>
+        <div class="bg-white p-4 flex justify-between gap-2 border-b">
+            <button onclick="placeBet('Green')" class="bg-green-500 text-white p-3 rounded-lg font-bold w-1/3 shadow-md active:bg-green-600">Join Green</button>
+            <button onclick="placeBet('Violet')" class="bg-purple-500 text-white p-3 rounded-lg font-bold w-1/3 shadow-md active:bg-purple-600">Join Violet</button>
+            <button onclick="placeBet('Red')" class="bg-red-500 text-white p-3 rounded-lg font-bold w-1/3 shadow-md active:bg-red-600">Join Red</button>
         </div>
-        <div class="bg-white p-2">
+        <div class="bg-white p-2 mt-2">
             <table class="w-full text-center text-sm">
-                <thead><tr class="text-gray-400 border-b"><th class="py-2">Period</th><th class="py-2">Price</th><th class="py-2">Number</th><th class="py-2">Result</th></tr></thead>
+                <thead><tr class="text-gray-400 border-b font-light"><th class="py-2">Period</th><th class="py-2">Price</th><th class="py-2">Number</th><th class="py-2">Result</th></tr></thead>
                 <tbody id="history-body"></tbody>
             </table>
         </div>
     </div>
 
-    <div class="footer-nav">
-        <div class="footer-item" onclick="showPage('home')"><i class="fa-solid fa-house"></i><p>Home</p></div>
-        <div class="footer-item" id="footer-win" onclick="showPage('win')"><i class="fa-solid fa-chart-line text-xl"></i><p>Win</p></div>
-        <div class="footer-item" id="footer-my" onclick="showPage('my')"><i class="fa-solid fa-user text-xl"></i><p>My</p></div>
+    <div class="footer-nav shadow-2xl">
+        <div class="footer-item" onclick="showPage('home')"><i class="fa-solid fa-house text-lg"></i><p>Home</p></div>
+        <div class="footer-item" id="footer-win" onclick="showPage('win')"><i class="fa-solid fa-trophy text-lg"></i><p>Win</p></div>
+        <div class="footer-item" id="footer-my" onclick="showPage('my')"><i class="fa-solid fa-user text-lg"></i><p>My</p></div>
     </div>
 
     <script type="module">
@@ -92,6 +101,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot, updateDoc, increment, getDocs, collection, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // Firebase Config (Paste your actual keys here)
         const firebaseConfig = {
             apiKey: "AIzaSyAiFPc7w1rdbWfzgs5svUCCjy3wtZfFXRs",
             authDomain: "gold-ba06b.firebaseapp.com",
@@ -107,63 +117,102 @@
         let selectedTime = 1;
 
         window.showPage = (id) => {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+            // Saare pages hide karo
+            document.querySelectorAll('.page').forEach(p => {
+                p.classList.remove('active-page');
+                p.style.display = 'none';
+            });
+            // Footer icons reset karo
             document.querySelectorAll('.footer-item').forEach(f => f.classList.remove('footer-active'));
-            if(id === 'win') { document.getElementById('win-page').classList.add('active-page'); document.getElementById('footer-win').classList.add('footer-active'); refreshHistory(); }
-            if(id === 'my') { document.getElementById('my-page').classList.add('active-page'); document.getElementById('footer-my').classList.add('footer-active'); }
+            
+            if(id === 'win') {
+                const winPage = document.getElementById('win-page');
+                winPage.classList.add('active-page');
+                winPage.style.display = 'block';
+                document.getElementById('footer-win').classList.add('footer-active');
+                refreshHistory();
+            } else if(id === 'my') {
+                const myPage = document.getElementById('my-page');
+                myPage.classList.add('active-page');
+                myPage.style.display = 'block';
+                document.getElementById('footer-my').classList.add('footer-active');
+            }
         };
 
         window.setTimeMode = (time) => {
             selectedTime = time;
-            document.querySelectorAll('.timer-btn').forEach(btn => { btn.classList.remove('timer-active'); if(btn.innerText.includes(time+'Min')) btn.classList.add('timer-active'); });
+            document.querySelectorAll('.timer-btn').forEach(btn => {
+                btn.classList.remove('timer-active');
+                if(btn.innerText.includes(time + 'Min')) btn.classList.add('timer-active');
+            });
             refreshHistory();
         };
 
         function refreshHistory() {
             const body = document.getElementById('history-body');
             let html = '';
-            for(let i=0; i<8; i++) {
-                let n = Math.floor(Math.random()*10); let c = (n%2==0)?'#ef4444':'#22c55e';
-                html += `<tr class="border-b"><td>202603${selectedTime}${283-i}</td><td>3${Math.floor(1000+Math.random()*9000)}</td><td style="color:${c}">${n}</td><td><span class="dot" style="background:${c}"></span></td></tr>`;
+            for(let i=0; i<10; i++) {
+                let n = Math.floor(Math.random()*10); 
+                let c = (n % 2 == 0) ? '#ef4444' : '#22c55e';
+                if(n == 0 || n == 5) c = '#a855f7';
+                html += `<tr class="border-b">
+                    <td class="py-3 text-gray-600">202603${selectedTime}${283-i}</td>
+                    <td class="text-gray-400">3${Math.floor(1000+Math.random()*9000)}</td>
+                    <td class="font-bold" style="color:${c}">${n}</td>
+                    <td><span class="dot" style="background:${c}"></span></td>
+                </tr>`;
             }
             body.innerHTML = html;
+            document.getElementById('p-num').innerText = `202603${selectedTime}284`;
         }
 
+        // TIMER LOGIC
         setInterval(() => {
             let now = new Date();
             let totalSec = now.getMinutes() * 60 + now.getSeconds();
             let rem = (selectedTime * 60) - (totalSec % (selectedTime * 60));
             let m = Math.floor(rem / 60); let s = rem % 60;
             document.getElementById('countdown').innerText = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
-            if(rem === 1) calculateWinner();
+            if(rem === 1) refreshHistory();
         }, 1000);
 
-        async function calculateWinner() {
-            // Low-amount wins logic inside
-            refreshHistory();
-        }
-
+        // AUTH & LOGIN
         document.getElementById('auth-confirm-btn').onclick = async () => {
-            const m = document.getElementById('auth-mobile').value; const p = document.getElementById('auth-password').value;
-            try { await signInWithEmailAndPassword(auth, m + "@wingo.com", p); } 
-            catch {
+            const m = document.getElementById('auth-mobile').value;
+            const p = document.getElementById('auth-password').value;
+            if(!m || !p) return alert("Enter Mobile and Password");
+            
+            try { 
+                await signInWithEmailAndPassword(auth, m + "@wingo.com", p); 
+            } catch {
                 const res = await createUserWithEmailAndPassword(auth, m + "@wingo.com", p);
-                await setDoc(doc(db, "users", res.user.uid), { mobile: m, balance: 20, id: Math.floor(100000+Math.random()*900000) });
+                await setDoc(doc(db, "users", res.user.uid), { 
+                    mobile: m, balance: 20, id: Math.floor(100000 + Math.random() * 900000) 
+                });
             }
         };
 
         onAuthStateChanged(auth, (user) => {
+            const authPage = document.getElementById('auth-page');
             if(user) {
                 currentUserId = user.uid;
+                authPage.style.display = 'none'; // Login page hide
+                authPage.classList.remove('active-page');
+
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     const d = snap.data();
-                    document.getElementById('user-balance-my').innerText = d.balance.toFixed(2);
-                    document.getElementById('user-balance-win').innerText = d.balance.toFixed(2);
-                    document.getElementById('my-mobile').innerText = d.mobile;
-                    document.getElementById('my-id').innerText = d.id;
+                    if(d) {
+                        document.getElementById('user-balance-my').innerText = d.balance.toFixed(2);
+                        document.getElementById('user-balance-win').innerText = d.balance.toFixed(2);
+                        document.getElementById('my-mobile').innerText = d.mobile;
+                        document.getElementById('my-id').innerText = d.id;
+                    }
                 });
-                showPage('my'); // Redirect to My Page on login
-            } else { document.getElementById('auth-page').classList.add('active-page'); }
+                showPage('my'); // Seedha My Page khulega
+            } else {
+                authPage.style.display = 'flex';
+                authPage.classList.add('active-page');
+            }
         });
 
         window.logout = () => signOut(auth).then(() => location.reload());
