@@ -8,12 +8,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f5f5f5; font-family: sans-serif; margin: 0; padding: 0; }
-        #auth-page, #home-page { display: none; } /* Default hidden to prevent flickering */
+        #auth-page, #home-page { display: none; }
         .profile-header { background-color: #007bff; color: white; padding: 25px; border-radius: 5px; margin: 10px; position: relative; }
         .list-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 12px; color: #444; font-size: 14px; }
         .footer-nav { background: white; border-top: 1px solid #ddd; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
         .footer-item { text-align: center; color: #888; font-size: 12px; }
         .footer-active { color: #007bff; }
+        /* Deep Red Logout Styling */
+        .btn-logout { background-color: #b91c1c; color: white; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .btn-logout:active { background-color: #991b1b; transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -34,11 +37,11 @@
     <div id="home-page">
         <div class="profile-header">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-white text-3xl overflow-hidden">
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Lucky" alt="avatar">
                 </div>
                 <div>
-                    <p class="font-bold text-lg">User:member_<span id="display-user-mobile">--</span></p>
+                    <p class="font-bold text-lg">User:member_+<span id="display-user-mobile">--</span></p>
                     <p class="text-sm opacity-90">ID: <span id="display-user-id">--</span></p>
                 </div>
                 <div class="absolute right-6 top-10">
@@ -66,8 +69,8 @@
             <div class="list-item"><i class="fa-solid fa-shield-halved text-blue-600"></i> Account Security</div>
             <div class="list-item"><i class="fa-solid fa-download text-blue-500"></i> App Download</div>
             
-            <div class="p-6">
-                <button onclick="logout()" class="w-full bg-gray-400 text-white py-3 rounded-xl font-bold text-lg shadow-inner">Logout</button>
+            <div class="p-6 text-center">
+                <button onclick="logout()" class="btn-logout">Logout</button>
             </div>
         </div>
 
@@ -83,7 +86,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAiFPc7w1rdbWfzgs5svUCCjy3wtZfFXRs",
@@ -98,26 +101,29 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Instant navigation function
         function showPage(pageId) {
-            document.getElementById('auth-page').style.display = 'none';
-            document.getElementById('home-page').style.display = 'none';
-            const target = document.getElementById(pageId + '-page');
-            target.style.display = (pageId === 'auth') ? 'flex' : 'block';
+            document.getElementById('auth-page').style.display = (pageId === 'auth') ? 'flex' : 'none';
+            document.getElementById('home-page').style.display = (pageId === 'home') ? 'block' : 'none';
         }
 
         document.getElementById('auth-confirm-btn').onclick = async () => {
             const mobile = document.getElementById('auth-mobile').value;
             const pass = document.getElementById('auth-password').value;
-            if(!mobile || !pass) return alert("Fill all details!");
+            if(!mobile || !pass) return alert("Please enter mobile and password!");
             const email = mobile + "@wingogold.com";
+            
             try {
                 try {
                     await signInWithEmailAndPassword(auth, email, pass);
                 } catch {
                     const res = await createUserWithEmailAndPassword(auth, email, pass);
+                    // Automatic Unique ID Generation (7 digits)
                     const randomId = Math.floor(1000000 + Math.random() * 9000000);
-                    await setDoc(doc(db, "users", res.user.uid), { mobile, balance: 20.0, id: randomId });
+                    await setDoc(doc(db, "users", res.user.uid), { 
+                        mobile: mobile, 
+                        balance: 20.0, 
+                        id: randomId 
+                    });
                 }
             } catch (e) { alert("Error: " + e.message); }
         };
@@ -131,12 +137,19 @@
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     if(snap.exists()){
                         document.getElementById('user-balance').innerText = snap.data().balance.toFixed(2);
-                        document.getElementById('display-user-id').innerText = snap.data().id || "7680695";
+                        document.getElementById('display-user-id').innerText = snap.data().id;
                     }
                 });
-                showPage('home'); // Seedha profile par le jayega
+                showPage('home');
             } else {
-                showPage('auth'); // Login page dikhayega
+                showPage('auth');
+            }
+        });
+
+        window.logout = () => signOut(auth);
+    </script>
+</body>
+</html>
             }
         });
 
