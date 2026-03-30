@@ -8,10 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { background-color: #f5f5f5; font-family: sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
-        /* Page handling fixes */
         .page { display: none; width: 100%; min-height: 100vh; }
         .active-page { display: block !important; }
-        #auth-page.active-page { display: flex !important; align-items: center; justify-content: center; position: fixed; top:0; left:0; right:0; bottom:0; }
+        
+        /* Auth page special centering */
+        #auth-page.active-page { display: flex !important; align-items: center; justify-content: center; position: fixed; top:0; left:0; width: 100%; height: 100%; z-index: 5000; }
         
         .profile-header { background: linear-gradient(135deg, #007bff, #00c6ff); color: white; padding: 25px; border-radius: 20px; margin: 10px; box-shadow: 0 10px 20px rgba(0,123,255,0.2); }
         .footer-nav { background: white; border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 12px 0; z-index: 1000; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
@@ -19,14 +20,12 @@
         .footer-active { color: #007bff; font-weight: bold; transform: translateY(-3px); }
         .timer-btn { padding: 10px 15px; border-radius: 12px; background: #f8f9fa; border: 1px solid #ddd; font-weight: bold; cursor: pointer; font-size: 12px; flex: 1; text-align: center; margin: 0 4px; transition: 0.3s; }
         .timer-active { background: #007bff; color: white; border-color: #007bff; box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
-        .tab-btn { padding: 12px; flex: 1; text-align: center; font-weight: bold; cursor: pointer; border-bottom: 3px solid transparent; color: #888; }
-        .tab-active { border-bottom: 3px solid #007bff; color: #007bff; background: #f0f7ff; }
     </style>
 </head>
 <body>
 
-    <div id="auth-page" class="page active-page bg-gray-900 z-[2000]">
-        <div class="w-full">
+    <div id="auth-page" class="page active-page bg-gray-900">
+        <div class="w-full max-w-md">
             <h1 class="text-4xl font-black text-yellow-500 text-center mb-8 italic tracking-tighter">WIN-GO GOLD</h1>
             <div class="bg-gray-800 p-8 mx-6 rounded-3xl space-y-4 shadow-2xl border border-gray-700">
                 <div class="space-y-2">
@@ -37,7 +36,7 @@
                     <label class="text-gray-400 text-sm ml-1">Password</label>
                     <input type="password" id="auth-password" class="w-full p-4 rounded-xl bg-gray-700 text-white outline-none focus:ring-2 focus:ring-yellow-500" placeholder="Enter Password">
                 </div>
-                <button id="auth-confirm-btn" class="w-full bg-yellow-500 hover:bg-yellow-400 transition-all p-4 rounded-xl font-black text-black uppercase tracking-widest shadow-lg">Login / Register</button>
+                <button id="auth-confirm-btn" class="w-full bg-yellow-500 hover:bg-yellow-400 transition-all p-4 rounded-xl font-black text-black uppercase tracking-widest">Login / Register</button>
             </div>
         </div>
     </div>
@@ -46,29 +45,29 @@
         <div class="bg-blue-600 p-6 text-white shadow-lg text-center rounded-b-[40px]">
             <p class="text-xs font-bold opacity-70 uppercase tracking-widest">Wallet Balance</p>
             <h1 class="text-4xl font-black mt-1">₹<span id="user-balance-win">0.00</span></h1>
-            <button onclick="showPage('my')" class="bg-green-500 hover:bg-green-400 px-8 py-2 rounded-full mt-4 font-bold text-sm shadow-lg">Deposit Now</button>
+            <button onclick="showPage('my')" class="bg-green-500 px-8 py-2 rounded-full mt-4 font-bold text-sm shadow-lg">Deposit Now</button>
         </div>
 
-        <div class="flex justify-around bg-white p-3 mx-4 -mt-6 rounded-2xl shadow-xl z-50 relative">
+        <div class="flex justify-around bg-white p-3 mx-4 -mt-6 rounded-2xl shadow-xl relative z-10">
             <div id="btn-1min" class="timer-btn timer-active" onclick="switchGame('1min')">1 Min</div>
             <div id="btn-3min" class="timer-btn" onclick="switchGame('3min')">3 Min</div>
             <div id="btn-5min" class="timer-btn" onclick="switchGame('5min')">5 Min</div>
         </div>
 
         <div class="bg-white m-4 p-5 rounded-2xl flex justify-between items-center shadow-md border-l-[6px] border-blue-500">
-            <div><p class="text-[10px] text-gray-400 font-bold">PERIOD</p><h3 class="font-black text-xl" id="p-num">...</h3></div>
-            <div class="text-right"><p class="text-[10px] text-gray-400 font-bold">TIME LEFT</p><h3 class="text-3xl font-black text-blue-600" id="countdown">00:00</h3></div>
+            <div><p class="text-[10px] text-gray-400 font-bold uppercase">Period</p><h3 class="font-black text-xl" id="p-num">...</h3></div>
+            <div class="text-right"><p class="text-[10px] text-gray-400 font-bold uppercase">Time Left</p><h3 class="text-3xl font-black text-blue-600 font-mono" id="countdown">00:00</h3></div>
         </div>
 
         <div class="bg-white mx-4 p-4 rounded-2xl flex justify-between gap-3 shadow-md">
-            <button onclick="placeBet('Green')" class="bg-green-500 text-white py-4 rounded-xl font-black flex-1">Green</button>
-            <button onclick="placeBet('Violet')" class="bg-purple-500 text-white py-4 rounded-xl font-black flex-1">Violet</button>
-            <button onclick="placeBet('Red')" class="bg-red-500 text-white py-4 rounded-xl font-black flex-1">Red</button>
+            <button onclick="placeBet('Green')" class="bg-green-500 text-white py-4 rounded-xl font-black flex-1 uppercase">Green</button>
+            <button onclick="placeBet('Violet')" class="bg-purple-500 text-white py-4 rounded-xl font-black flex-1 uppercase">Violet</button>
+            <button onclick="placeBet('Red')" class="bg-red-500 text-white py-4 rounded-xl font-black flex-1 uppercase">Red</button>
         </div>
 
-        <div id="game-history-content" class="bg-white m-4 rounded-xl shadow-md p-2">
+        <div class="bg-white m-4 rounded-xl shadow-md p-2">
             <table class="w-full text-center text-xs">
-                <thead><tr class="text-gray-400 border-b"><th class="py-3">Period</th><th class="py-3">Num</th><th class="py-3">Result</th></tr></thead>
+                <thead><tr class="text-gray-400 border-b uppercase"><th class="py-3">Period</th><th class="py-3">Num</th><th class="py-3">Result</th></tr></thead>
                 <tbody id="history-body"></tbody>
             </table>
         </div>
@@ -77,15 +76,15 @@
     <div id="my-page" class="page">
         <div class="profile-header">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center"><i class="fa-solid fa-user text-2xl"></i></div>
+                <div class="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center"><i class="fa-solid fa-user-secret text-2xl"></i></div>
                 <div>
-                    <p class="font-black text-xl">Member_<span id="my-mobile">...</span></p>
-                    <p class="text-xs opacity-70">UID: <span id="my-id">...</span></p>
+                    <p class="font-black text-xl">Member_<span id="my-mobile">0000</span></p>
+                    <p class="text-xs opacity-70">UID: <span id="my-id">---</span></p>
                 </div>
             </div>
-            <p class="mt-6 text-2xl font-black">Balance: ₹<span id="user-balance-my">0.00</span></p>
+            <p class="mt-6 text-2xl font-black italic">Balance: ₹<span id="user-balance-my">0.00</span></p>
             <div class="flex gap-3 mt-4">
-                <button onclick="alert('Recharge Coming Soon')" class="flex-1 bg-white text-blue-600 py-3 rounded-xl font-black text-sm">RECHARGE</button>
+                <button onclick="alert('Recharge UPI: admin@upi')" class="flex-1 bg-white text-blue-600 py-3 rounded-xl font-black text-sm">RECHARGE</button>
                 <button onclick="logout()" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-black text-sm">LOGOUT</button>
             </div>
         </div>
@@ -93,7 +92,7 @@
 
     <div class="footer-nav" id="main-nav" style="display: none;">
         <div class="footer-item" id="nav-win" onclick="showPage('win')"><i class="fa-solid fa-gamepad text-xl"></i><p>WinGo</p></div>
-        <div class="footer-item" id="nav-my" onclick="showPage('my')"><i class="fa-solid fa-user text-xl"></i><p>Account</p></div>
+        <div class="footer-item" id="nav-my" onclick="showPage('my')"><i class="fa-solid fa-circle-user text-xl"></i><p>Account</p></div>
     </div>
 
     <script type="module">
@@ -120,13 +119,14 @@
 
         // UI Navigation Fix
         window.showPage = (id) => {
+            if(!currentUserId && id !== 'auth') return; // Don't show game if not logged in
+
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
             document.querySelectorAll('.footer-item').forEach(f => f.classList.remove('footer-active'));
             
-            const targetPage = document.getElementById(id + '-page');
-            if(targetPage) {
-                targetPage.classList.add('active-page');
-                if(id !== 'auth') document.getElementById('main-nav').style.display = 'flex';
+            const target = document.getElementById(id + '-page');
+            if(target) {
+                target.classList.add('active-page');
                 const navItem = document.getElementById('nav-' + id);
                 if(navItem) navItem.classList.add('footer-active');
             }
@@ -136,11 +136,11 @@
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 currentUserId = user.uid;
-                // Hide Login, Show Game
                 document.getElementById('auth-page').classList.remove('active-page');
+                document.getElementById('main-nav').style.display = 'flex';
                 showPage('win');
                 
-                // Fetch User Data
+                // Real-time Balance & Data
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     const d = snap.data();
                     if(d) {
@@ -159,31 +159,25 @@
             }
         });
 
-        // Login / Register Function
+        // Login / Register Logic
         document.getElementById('auth-confirm-btn').onclick = async () => {
             const m = document.getElementById('auth-mobile').value;
             const p = document.getElementById('auth-password').value;
-            if(m.length < 10) return alert("Enter 10 digit mobile number");
+            if(m.length < 10) return alert("Enter valid mobile!");
 
             try {
-                // Try Login
                 await signInWithEmailAndPassword(auth, m + "@wingo.com", p);
-            } catch (err) {
-                // If user doesn't exist, Register
+            } catch {
                 try {
                     const res = await createUserWithEmailAndPassword(auth, m + "@wingo.com", p);
                     await setDoc(doc(db, "users", res.user.uid), { 
-                        mobile: m, 
-                        balance: 20, 
-                        id: Math.floor(100000 + Math.random() * 900000) 
+                        mobile: m, balance: 20, id: Math.floor(100000 + Math.random() * 900000) 
                     });
-                } catch (regErr) {
-                    alert("Auth Error: " + regErr.message);
-                }
+                } catch (e) { alert("Error: " + e.message); }
             }
         };
 
-        // --- TIMER LOGIC ---
+        // Timer & Game Records
         function startAutomation() {
             setInterval(() => {
                 const now = new Date();
@@ -209,15 +203,31 @@
                 let html = "";
                 snap.forEach(doc => {
                     const d = doc.data();
-                    let color = (d.color === 'Red') ? 'text-red-500' : 'text-green-500';
-                    html += `<tr class="border-b"><td class="py-3">${d.period}</td><td class="font-bold ${color}">${d.number}</td><td>${d.color}</td></tr>`;
+                    let color = d.color === 'Red' ? 'text-red-500' : 'text-green-500';
+                    html += `<tr class="border-b"><td class="py-3 font-mono">${d.period}</td><td class="font-bold ${color}">${d.number}</td><td><span class="inline-block w-2 h-2 rounded-full ${d.color === 'Red' ? 'bg-red-500' : 'bg-green-500'}"></span></td></tr>`;
                 });
-                document.getElementById('history-body').innerHTML = html;
+                document.getElementById('history-body').innerHTML = html || "<tr><td colspan='3' class='py-4'>Waiting...</td></tr>";
             });
         }
 
+        window.placeBet = async (color) => {
+            const amt = prompt(`Bet on ${color}. Min ₹10:`, "10");
+            if (!amt || isNaN(amt) || amt < 10) return;
+            if (amt > userBalance) return alert("Low Balance!");
+            await updateDoc(doc(db, "users", currentUserId), { balance: increment(-parseInt(amt)) });
+            await setDoc(doc(db, "current_bets", "BET_"+Date.now()), {
+                uid: currentUserId, selection: color, amount: parseInt(amt), period: currentPeriod, game: activeGame, status: "pending", timestamp: serverTimestamp()
+            });
+            alert("Bet Placed!");
+        };
+
+        window.switchGame = (game) => {
+            activeGame = game;
+            ["1min", "3min", "5min"].forEach(g => document.getElementById('btn-'+g).className = (g===game)?"timer-btn timer-active":"timer-btn");
+            loadHistory();
+        };
+
         window.logout = () => signOut(auth).then(() => location.reload());
-        window.switchGame = (game) => { activeGame = game; loadHistory(); };
 
     </script>
 </body>
